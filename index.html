@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secret 5-Bit Code App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen p-4 md:p-8">
+    <div class="max-w-md mx-auto bg-slate-800 p-6 rounded-2xl shadow-xl">
+        <h1 class="text-2xl font-bold mb-6 text-center text-emerald-400">Secret 5-Bit Code</h1>
+        
+        <div class="mb-4">
+            <label class="block text-sm mb-2">Input (Text or Binary):</label>
+            <textarea id="input" class="w-full h-24 p-3 bg-slate-700 rounded-lg border border-slate-600 focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="Enter text or 01010..."></textarea>
+        </div>
+
+        <div class="flex gap-2 mb-6">
+            <button onclick="encode()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 p-2 rounded-lg font-bold">Encode</button>
+            <button onclick="decode()" class="flex-1 bg-blue-600 hover:bg-blue-500 p-2 rounded-lg font-bold">Decode</button>
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-sm mb-2">Output:</label>
+            <div class="relative">
+                <textarea id="output" readonly class="w-full h-24 p-3 bg-slate-950 rounded-lg border border-slate-600"></textarea>
+                <button onclick="copyOutput()" class="absolute top-2 right-2 bg-slate-600 hover:bg-slate-500 text-xs px-2 py-1 rounded">Copy</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // A=1 (00001) to Z=26 (11010)
+        function getBinary(char) {
+            const code = char.toUpperCase().charCodeAt(0) - 64;
+            if (code >= 1 && code <= 26) {
+                return code.toString(2).padStart(5, '0');
+            }
+            return null;
+        }
+
+        function getChar(bin) {
+            const code = parseInt(bin, 2);
+            if (code >= 1 && code <= 26) {
+                return String.fromCharCode(code + 64);
+            }
+            return '?';
+        }
+
+        function encode() {
+            const text = document.getElementById('input').value;
+            let result = "";
+            for (let char of text) {
+                if (char === ' ') continue;
+                const bin = getBinary(char);
+                if (bin) result += bin;
+            }
+            document.getElementById('output').value = result;
+        }
+
+        function decode() {
+            const binStr = document.getElementById('input').value.replace(/\s/g, '');
+            let result = "";
+            for (let i = 0; i < binStr.length; i += 5) {
+                const chunk = binStr.substring(i, i + 5);
+                if (chunk.length === 5) {
+                    result += getChar(chunk);
+                }
+            }
+            document.getElementById('output').value = result;
+        }
+
+        function copyOutput() {
+            const output = document.getElementById('output');
+            output.select();
+            document.execCommand('copy');
+            alert('Copied to clipboard!');
+        }
+    </script>
+</body>
+</html>
